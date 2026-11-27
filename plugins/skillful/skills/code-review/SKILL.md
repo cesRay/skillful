@@ -137,6 +137,7 @@ Keep the report short. A reviewer reads it in one minute. Write it in plain Engl
 - Do not explain your reasoning, restate the PR description, or praise the code.
 - Short sentences, one idea each. Common words ("use", not "utilise"). No idioms, slang or jokes.
 - Omit any section that has nothing to say.
+- **The user is the author of their own ticket comments.** Find their login (`gh api user -q .login`). When a point comes from a comment they wrote, write in the first person with the comment's link: "I mentioned in [this comment](<url>) …", never their name ("César asked …"). Get the link from `gh api repos/<owner>/<repo>/issues/<n>/comments --jq '.[] | "\(.user.login) \(.html_url)"'`.
 
 ```
 ## Review Round <X>
