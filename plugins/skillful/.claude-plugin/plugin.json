@@ -1,0 +1,9 @@
+{
+  "name": "skillful",
+  "version": "0.3.0",
+  "description": "Core suite of reusable skills",
+  "author": {
+    "name": "César Rayas"
+  },
+  "license": "MIT"
+}

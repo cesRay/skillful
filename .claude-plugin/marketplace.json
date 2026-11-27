@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "skillful",
+  "owner": {
+    "name": "César Rayas"
+  },
+  "metadata": {
+    "description": "A suite of reusable skills for use across multiple projects",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "skillful",
+      "source": "./plugins/skillful",
+      "description": "Core suite of reusable skills",
+      "category": "productivity"
+    }
+  ]
+}
