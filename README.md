@@ -1,42 +1,48 @@
 # skillful
 
-Marketplace de Claude Code con una suite de skills reutilizables en múltiples proyectos.
+A Claude Code marketplace with a suite of reusable skills for use across multiple projects.
 
-## Estructura
+## Skills
+
+| Skill | Description |
+|-------|-------------|
+| `code-review` | Reviews the changes for one ticket in a fast-moving, legacy or vibe-coded codebase: code hygiene, comments, acceptance criteria, error handling, bugs and tests. |
+
+## Structure
 
 ```
 .claude-plugin/
-  marketplace.json        # Catálogo del marketplace
+  marketplace.json        # Marketplace catalog
 plugins/
   skillful/
     .claude-plugin/
-      plugin.json         # Manifiesto del plugin
+      plugin.json         # Plugin manifest
     skills/
-      <nombre>/SKILL.md   # Una carpeta por skill
+      <name>/SKILL.md     # One folder per skill
 ```
 
-## Instalación
+## Installation
 
-Desde una copia local:
+From GitHub:
 
 ```
-/plugin marketplace add /ruta/a/skillful
+/plugin marketplace add cesRay/skillful
 /plugin install skillful@skillful
 ```
 
-Desde GitHub (después de publicar el repo):
+From a local copy:
 
 ```
-/plugin marketplace add <usuario>/skillful
+/plugin marketplace add /path/to/skillful
 /plugin install skillful@skillful
 ```
 
-## Añadir una skill
+## Add a skill
 
-1. Crea `plugins/skillful/skills/<nombre>/SKILL.md` con frontmatter `name` y `description`.
-2. Sube la versión en `plugins/skillful/.claude-plugin/plugin.json`.
-3. Ejecuta `claude plugin validate .` antes de hacer commit.
+1. Create `plugins/skillful/skills/<name>/SKILL.md` with `name` and `description` in the frontmatter.
+2. Bump the version in `plugins/skillful/.claude-plugin/plugin.json`.
+3. Run `claude plugin validate .` before you commit.
 
-## Añadir otro plugin
+## Add another plugin
 
-Crea `plugins/<plugin>/` con su propio `.claude-plugin/plugin.json` y regístralo en `.claude-plugin/marketplace.json`.
+Create `plugins/<plugin>/` with its own `.claude-plugin/plugin.json`, and register it in `.claude-plugin/marketplace.json`.
