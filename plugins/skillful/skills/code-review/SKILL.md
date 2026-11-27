@@ -188,7 +188,7 @@ Do this step only when the review is for a PR. Post one GitHub review that holds
 
 - **Body:** the report from Step 4.
 - **Verdict:** `REQUEST_CHANGES` for CHANGES REQUESTED, `APPROVE` for APPROVED. If GitHub refuses the event (for example, the user is the PR author), post with `COMMENT` and keep the verdict line in the body.
-- **In-code comments:** add one when a change points to a line inside the diff. Put it on that line (a line in the new file, `side: RIGHT`), and start it with the same tag as the change, for example `[Required · Comment rules]`. Keep it to one or two sentences. When one problem repeats on many lines, comment on one line and give the count. Do not add an in-code comment for a change that is not about a specific line (a missing test, an acceptance criterion).
+- **In-code comments:** add one when a change points to a line inside the diff. Put it on that line (a line in the new file, `side: RIGHT`), and start it with the same tag as the change, for example `[Required · Comment rules]`. Keep it to one or two sentences. GitHub accepts only lines inside a diff hunk. When the problem is on a line outside the hunks, put the comment on the nearest changed line that causes it, and name the real line. When one problem repeats on many lines, comment on one line and give the count. Do not add an in-code comment for a change that is not about a specific line (a missing test, an acceptance criterion).
 
 ```bash
 gh api repos/<owner>/<repo>/pulls/<n>/reviews --method POST --input review.json
