@@ -128,11 +128,14 @@ First, find out whether the project already has a test tool:
 
 ## Step 4: Report
 
-The report must stay under 600 words. Write it in plain English for an international team: most readers are not native English speakers.
+Keep the report short. A reviewer reads it in one minute. Write it in plain English for an international team: most readers are not native English speakers.
 
-- Short sentences, one idea each. Common words ("use", not "utilise").
-- No idioms, slang or jokes.
-- Explain the problem and its effect for a human reader first. Put file paths, code names and technical detail in the notes.
+- **Under 250 words in total.** Count before you send.
+- **Each change is one or two sentences:** the problem, its effect, the fix. Put the file and line in the change itself, not in a separate note.
+- **Notes are at most four bullets, one line each.** Acceptance criteria and tests are two of them. Add another note only when a developer needs it to act on a change.
+- Do not report what you checked and found fine. Do not list every file or line when one example and a count is enough ("13 comments, for example `lib/runs.ts:728`").
+- Do not explain your reasoning, restate the PR description, or praise the code.
+- Short sentences, one idea each. Common words ("use", not "utilise"). No idioms, slang or jokes.
 - Omit any section that has nothing to say.
 
 ```
@@ -142,14 +145,13 @@ The report must stay under 600 words. Write it in plain English for an internati
 **Risk:** LOW | MEDIUM | HIGH
 
 ### Changes
-1. **[Required]** <What is wrong and why it matters, in one or two plain sentences. What to do.>
+1. **[Required]** <What is wrong and what to do, in one or two sentences, with `path/file.ts:42`.>
 2. **[Optional]** <...>
 
 ### Notes
-- **Acceptance criteria:** <n> of <m> met. <List only the ones that are partial, not met or cannot be verified.>
-- **Tests:** <command and result, or "No test tool installed. Tests skipped.">
-- `path/file.ts:42`: <technical detail for change 1>
-- <Anything a developer needs to act on the changes: edge cases, callers to check, things to verify by hand.>
+- **Acceptance criteria:** <n> of <m> met. <Name only the ones that are partial, not met or cannot be verified, in one line.>
+- **Tests:** <command and result in one line, or "No test tool installed. Tests skipped.">
+- <Optional: one line a developer needs to act on a change, or one thing to watch after merge.>
 ```
 
 **Round number.** Count the earlier "Review Round" reports for this ticket: in the PR comments (`gh pr view <n> --comments`) or in this conversation. The new report is that count plus one. With no earlier report, it is Round 1. In Round 2 and later, check first whether each earlier required change is fixed. List only what is still open or new.
@@ -165,6 +167,6 @@ The report must stay under 600 words. Write it in plain English for an internati
 - **MEDIUM**: touches shared code with several callers, a user flow, an external API, or code with no tests around it. A bug would affect users but would be easy to fix.
 - **HIGH**: touches authentication, permissions, payments, personal data, database schema or migrations, or data writes that are hard to undo. Or the change is large and has no tests. A bug could lose data, expose data or stop a core flow.
 
-An APPROVED change can still be HIGH risk. Say what to watch after the merge in the notes.
+An APPROVED change can still be HIGH risk. Say what to watch after the merge in one note.
 
 After the report, offer to fix the required changes.
