@@ -13,7 +13,7 @@ Review the code that one ticket introduces. The codebase is legacy or vibe-coded
 - **Few findings, each actionable.** Every finding names a file and line, says what is wrong, and says what to do. If a finding has no clear fix, drop it.
 - **Two severities only.** A **blocker** must be fixed before merge. A **suggestion** is optional. When in doubt, it is a suggestion.
 - **Match the surrounding style.** Do not impose patterns the project does not use (layers, abstractions, test frameworks, lint rules).
-- **Read-only.** Do not edit code, push, or post comments on GitHub unless the user asks.
+- **Do not change code.** Do not edit code or push. When the review is for a PR, post it on the PR (Step 5). Otherwise, post nothing on GitHub unless the user asks.
 
 ## Step 1: Get the ticket and the diff
 
@@ -155,7 +155,7 @@ Keep the report short. A reviewer reads it in one minute. Write it in plain Engl
 - <Optional: one line a developer needs to act on a change, or one thing to watch after merge.>
 ```
 
-**Round number.** Count the earlier "Review Round" reports for this ticket: in the PR comments (`gh pr view <n> --comments`) or in this conversation. The new report is that count plus one. With no earlier report, it is Round 1. In Round 2 and later, check first whether each earlier required change is fixed. List only what is still open or new.
+**Round number.** Count the earlier "Review Round" reports for this ticket: in the PR reviews and comments (`gh pr view <n> --json reviews,comments`) or in this conversation. The new report is that count plus one. With no earlier report, it is Round 1. In Round 2 and later, check first whether each earlier required change is fixed. List only what is still open or new.
 
 **Verdict.**
 
@@ -169,5 +169,21 @@ Keep the report short. A reviewer reads it in one minute. Write it in plain Engl
 - **HIGH**: touches authentication, permissions, payments, personal data, database schema or migrations, or data writes that are hard to undo. Or the change is large and has no tests. A bug could lose data, expose data or stop a core flow.
 
 An APPROVED change can still be HIGH risk. Say what to watch after the merge in one note.
+
+## Step 5: Post the review on the PR
+
+Do this step only when the review is for a PR. Post one GitHub review that holds the summary, the verdict and the in-code comments together:
+
+- **Body:** the report from Step 4.
+- **Verdict:** `REQUEST_CHANGES` for CHANGES REQUESTED, `APPROVE` for APPROVED. If GitHub refuses the event (for example, the user is the PR author), post with `COMMENT` and keep the verdict line in the body.
+- **In-code comments:** add one when a change points to a line inside the diff. Put it on that line (a line in the new file, `side: RIGHT`), and start it with the same `[Required]` or `[Optional]` tag. Keep it to one or two sentences. When one problem repeats on many lines, comment on one line and give the count. Do not add an in-code comment for a change that is not about a specific line (a missing test, an acceptance criterion).
+
+```bash
+gh api repos/<owner>/<repo>/pulls/<n>/reviews --method POST --input review.json
+# review.json: {"commit_id": "<head sha>", "event": "REQUEST_CHANGES", "body": "<report>",
+#   "comments": [{"path": "lib/runs.ts", "line": 728, "side": "RIGHT", "body": "**[Required]** ..."}]}
+```
+
+Get the head SHA with `gh pr view <n> --json headRefOid -q .headRefOid`. Write `review.json` in a temporary directory. After posting, give the user the review link.
 
 After the report, offer to fix the required changes.
