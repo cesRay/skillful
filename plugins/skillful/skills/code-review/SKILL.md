@@ -144,10 +144,11 @@ Keep the report short. A reviewer reads it in one minute. Write it in plain Engl
 
 **Verdict:** APPROVED | CHANGES REQUESTED
 **Risk:** LOW | MEDIUM | HIGH
+**Reason:** <one or more categories, for example: Comment rules, Bug found>
 
 ### Changes
-1. **[Required]** <What is wrong and what to do, in one or two sentences, with `path/file.ts:42`.>
-2. **[Optional]** <...>
+1. **[Required · <category>]** <What is wrong and what to do, in one or two sentences, with `path/file.ts:42`.>
+2. **[Optional · <category>]** <...>
 
 ### Notes
 - **Acceptance criteria:** <n> of <m> met. <Name only the ones that are partial, not met or cannot be verified, in one line.>
@@ -161,6 +162,17 @@ Keep the report short. A reviewer reads it in one minute. Write it in plain Engl
 
 - **APPROVED**: no blockers. Optional changes can still be listed.
 - **CHANGES REQUESTED**: at least one blocker. Every blocker is a **[Required]** change. Every suggestion is **[Optional]**.
+
+**Reason.** Give each change one category, and list every category in the report once, required ones first. Omit the line when there are no changes. Use these categories:
+
+- **Code hygiene**: names, dead code, debug leftovers, duplication, files that do not belong (area 1).
+- **Comment rules**: a comment that breaks a rule in area 2.
+- **Acceptance criteria unmet**: an AC that is partial or not met (area 3).
+- **Missing error handling**: area 4.
+- **Bug found**: area 5, except security.
+- **Security**: unvalidated input, secrets, a missing permission check.
+- **Performance**: slow or repeated work the change adds.
+- **Missing or failing tests**: area 6.
 
 **Risk.** Rate the risk of merging this change as it is now, not the quality of the code.
 
@@ -176,12 +188,12 @@ Do this step only when the review is for a PR. Post one GitHub review that holds
 
 - **Body:** the report from Step 4.
 - **Verdict:** `REQUEST_CHANGES` for CHANGES REQUESTED, `APPROVE` for APPROVED. If GitHub refuses the event (for example, the user is the PR author), post with `COMMENT` and keep the verdict line in the body.
-- **In-code comments:** add one when a change points to a line inside the diff. Put it on that line (a line in the new file, `side: RIGHT`), and start it with the same `[Required]` or `[Optional]` tag. Keep it to one or two sentences. When one problem repeats on many lines, comment on one line and give the count. Do not add an in-code comment for a change that is not about a specific line (a missing test, an acceptance criterion).
+- **In-code comments:** add one when a change points to a line inside the diff. Put it on that line (a line in the new file, `side: RIGHT`), and start it with the same tag as the change, for example `[Required · Comment rules]`. Keep it to one or two sentences. When one problem repeats on many lines, comment on one line and give the count. Do not add an in-code comment for a change that is not about a specific line (a missing test, an acceptance criterion).
 
 ```bash
 gh api repos/<owner>/<repo>/pulls/<n>/reviews --method POST --input review.json
 # review.json: {"commit_id": "<head sha>", "event": "REQUEST_CHANGES", "body": "<report>",
-#   "comments": [{"path": "lib/runs.ts", "line": 728, "side": "RIGHT", "body": "**[Required]** ..."}]}
+#   "comments": [{"path": "lib/runs.ts", "line": 728, "side": "RIGHT", "body": "**[Required · Comment rules]** ..."}]}
 ```
 
 Get the head SHA with `gh pr view <n> --json headRefOid -q .headRefOid`. Write `review.json` in a temporary directory. After posting, give the user the review link.
