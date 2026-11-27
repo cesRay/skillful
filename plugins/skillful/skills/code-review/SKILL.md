@@ -13,7 +13,7 @@ Review the code that one ticket introduces. The codebase is legacy or vibe-coded
 - **Few findings, each actionable.** Every finding names a file and line, says what is wrong, and says what to do. If a finding has no clear fix, drop it.
 - **Two severities only.** A **blocker** must be fixed before merge. A **suggestion** is optional. When in doubt, it is a suggestion.
 - **Match the surrounding style.** Do not impose patterns the project does not use (layers, abstractions, test frameworks, lint rules).
-- **Read-only.** Do not edit code, push, or post comments on GitHub unless the user asks.
+- **Do not change code.** Do not edit code or push. When the review is for a PR, post it on the PR (Step 5). Otherwise, post nothing on GitHub unless the user asks.
 
 ## Step 1: Get the ticket and the diff
 
@@ -128,36 +128,51 @@ First, find out whether the project already has a test tool:
 
 ## Step 4: Report
 
-The report must stay under 600 words. Write it in plain English for an international team: most readers are not native English speakers.
+Keep the report short. A reviewer reads it in one minute. Write it in plain English for an international team: most readers are not native English speakers.
 
-- Short sentences, one idea each. Common words ("use", not "utilise").
-- No idioms, slang or jokes.
-- Explain the problem and its effect for a human reader first. Put file paths, code names and technical detail in the notes.
+- **Under 250 words in total.** Count before you send.
+- **Each change is one or two sentences:** the problem, its effect, the fix. Put the file and line in the change itself, not in a separate note.
+- **Notes are at most four bullets, one line each.** Acceptance criteria and tests are two of them. Add another note only when a developer needs it to act on a change.
+- Do not report what you checked and found fine. Do not list every file or line when one example and a count is enough ("13 comments, for example `lib/runs.ts:728`").
+- Do not explain your reasoning, restate the PR description, or praise the code.
+- Short sentences, one idea each. Common words ("use", not "utilise"). No idioms, slang or jokes.
 - Omit any section that has nothing to say.
+- **The user is the author of their own ticket comments.** Find their login (`gh api user -q .login`). When a point comes from a comment they wrote, write in the first person with the comment's link: "I mentioned in [this comment](<url>) …", never their name ("César asked …"). Get the link from `gh api repos/<owner>/<repo>/issues/<n>/comments --jq '.[] | "\(.user.login) \(.html_url)"'`.
 
 ```
 ## Review Round <X>
 
 **Verdict:** APPROVED | CHANGES REQUESTED
 **Risk:** LOW | MEDIUM | HIGH
+**Reason:** <one or more categories, for example: Comment rules, Bug found>
 
 ### Changes
-1. **[Required]** <What is wrong and why it matters, in one or two plain sentences. What to do.>
-2. **[Optional]** <...>
+1. **[Required · <category>]** <What is wrong and what to do, in one or two sentences, with `path/file.ts:42`.>
+2. **[Optional · <category>]** <...>
 
 ### Notes
-- **Acceptance criteria:** <n> of <m> met. <List only the ones that are partial, not met or cannot be verified.>
-- **Tests:** <command and result, or "No test tool installed. Tests skipped.">
-- `path/file.ts:42`: <technical detail for change 1>
-- <Anything a developer needs to act on the changes: edge cases, callers to check, things to verify by hand.>
+- **Acceptance criteria:** <n> of <m> met. <Name only the ones that are partial, not met or cannot be verified, in one line.>
+- **Tests:** <command and result in one line, or "No test tool installed. Tests skipped.">
+- <Optional: one line a developer needs to act on a change, or one thing to watch after merge.>
 ```
 
-**Round number.** Count the earlier "Review Round" reports for this ticket: in the PR comments (`gh pr view <n> --comments`) or in this conversation. The new report is that count plus one. With no earlier report, it is Round 1. In Round 2 and later, check first whether each earlier required change is fixed. List only what is still open or new.
+**Round number.** Count the earlier "Review Round" reports for this ticket: in the PR reviews and comments (`gh pr view <n> --json reviews,comments`) or in this conversation. The new report is that count plus one. With no earlier report, it is Round 1. In Round 2 and later, check first whether each earlier required change is fixed. List only what is still open or new.
 
 **Verdict.**
 
 - **APPROVED**: no blockers. Optional changes can still be listed.
 - **CHANGES REQUESTED**: at least one blocker. Every blocker is a **[Required]** change. Every suggestion is **[Optional]**.
+
+**Reason.** Give each change one category, and list every category in the report once, required ones first. Omit the line when there are no changes. Use these categories:
+
+- **Code hygiene**: names, dead code, debug leftovers, duplication, files that do not belong (area 1).
+- **Comment rules**: a comment that breaks a rule in area 2.
+- **Acceptance criteria unmet**: an AC that is partial or not met (area 3).
+- **Missing error handling**: area 4.
+- **Bug found**: area 5, except security.
+- **Security**: unvalidated input, secrets, a missing permission check.
+- **Performance**: slow or repeated work the change adds.
+- **Missing or failing tests**: area 6.
 
 **Risk.** Rate the risk of merging this change as it is now, not the quality of the code.
 
@@ -165,6 +180,22 @@ The report must stay under 600 words. Write it in plain English for an internati
 - **MEDIUM**: touches shared code with several callers, a user flow, an external API, or code with no tests around it. A bug would affect users but would be easy to fix.
 - **HIGH**: touches authentication, permissions, payments, personal data, database schema or migrations, or data writes that are hard to undo. Or the change is large and has no tests. A bug could lose data, expose data or stop a core flow.
 
-An APPROVED change can still be HIGH risk. Say what to watch after the merge in the notes.
+An APPROVED change can still be HIGH risk. Say what to watch after the merge in one note.
+
+## Step 5: Post the review on the PR
+
+Do this step only when the review is for a PR. Post one GitHub review that holds the summary, the verdict and the in-code comments together:
+
+- **Body:** the report from Step 4.
+- **Verdict:** `REQUEST_CHANGES` for CHANGES REQUESTED, `APPROVE` for APPROVED. If GitHub refuses the event (for example, the user is the PR author), post with `COMMENT` and keep the verdict line in the body.
+- **In-code comments:** add one when a change points to a line inside the diff. Put it on that line (a line in the new file, `side: RIGHT`), and start it with the same tag as the change, for example `[Required · Comment rules]`. Keep it to one or two sentences. When one problem repeats on many lines, comment on one line and give the count. Do not add an in-code comment for a change that is not about a specific line (a missing test, an acceptance criterion).
+
+```bash
+gh api repos/<owner>/<repo>/pulls/<n>/reviews --method POST --input review.json
+# review.json: {"commit_id": "<head sha>", "event": "REQUEST_CHANGES", "body": "<report>",
+#   "comments": [{"path": "lib/runs.ts", "line": 728, "side": "RIGHT", "body": "**[Required · Comment rules]** ..."}]}
+```
+
+Get the head SHA with `gh pr view <n> --json headRefOid -q .headRefOid`. Write `review.json` in a temporary directory. After posting, give the user the review link.
 
 After the report, offer to fix the required changes.
